@@ -42,6 +42,24 @@ Performs deep, file-level analysis of a codebase to reverse-engineer its archite
 | `interactive/` | Queryable dependency database, example queries |
 | `visuals/` | Architecture diagrams, dependency graphs, security model |
 
+**Prerequisites for comprehensive security analysis**:
+
+> The skill performs AI-assisted analysis without any additional tools. For full automated security scanning, the following tools should be installed depending on the languages in the codebase being analyzed. The skill will detect what is available, use Docker as a fallback, and document any tools that were skipped.
+
+| Language / Scope | Tools |
+|---|---|
+| Python | `bandit`, `semgrep`, `pip-audit`, `safety`, `detect-secrets`, `truffleHog3` |
+| JavaScript / TypeScript | `semgrep`, `njsscan`, `eslint` + security plugins, `retire.js`, `gitleaks` |
+| Go | `gosec`, `govulncheck`, `semgrep`, `nancy` |
+| Java / Kotlin | `semgrep`, `SpotBugs` + `find-sec-bugs`, `PMD`, `grype` |
+| C# / .NET | `semgrep`, `dotnet` CLI (built-in) |
+| Ruby | `brakeman`, `bundle-audit`, `semgrep` |
+| PHP | `psalm`, `phpcs` + `phpcs-security-audit`, `semgrep` |
+| Rust | `cargo audit`, `cargo deny`, `semgrep` |
+| C / C++ | `flawfinder`, `cppcheck`, `clang-tidy`, `semgrep` |
+| Infrastructure as Code | `checkov`, `trivy`, `tfsec`, `kics`, `hadolint` |
+| All projects (universal) | `gitleaks`, `truffleHog3`, `grype`, `syft`, `semgrep` (OWASP pack) |
+
 See [SKILL.md](.github/skills/codebase-architecture-analyst/SKILL.md) for full workflow details, security test categories, automated tool reference, and AI-assisted analysis techniques.
 
 ---
