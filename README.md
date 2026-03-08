@@ -1,3 +1,6 @@
+![GitHub issues](https://img.shields.io/github/issues-raw/toddysm/software-engineering-skills?link=https%3A%2F%2Fgithub.com%2Ftoddysm%2Fsoftware-engineering-skills%2Fissues)
+ ![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/toddysm/software-engineering-skills?link=https%3A%2F%2Fgithub.com%2Ftoddysm%2Fsoftware-engineering-skills%2Fpulls)
+
 # Software Engineering Skills
 
 A curated collection of AI agent skills for GitHub Copilot and Anthropic Claude that extend their capabilities for software engineering workflows. Each skill packages domain knowledge, structured workflows, and tool integrations into a reusable unit that can be invoked by natural language.
