@@ -1,6 +1,6 @@
 ---
 name: codebase-architecture-analyst
-description: Analyzes codebases to reverse engineer architecture, generating comprehensive architectural diagrams and detailed documentation. Examines code structure, dependencies, patterns, security, performance, and scalability considerations. Triggers on phrases like "reverse engineer this project", "generate architecture from code", "explain this project", "analyze codebase architecture", or "document this system's architecture". Provides deep file-level analysis, interactive dependency querying, and human-readable security/architecture insights.
+description: Analyzes codebases to reverse engineer architecture, generating comprehensive architectural diagrams and detailed documentation. Examines code structure, dependencies, patterns, security, performance, and scalability considerations. Triggers on phrases like "reverse engineer this project", "generate architecture from code", "explain this project", "analyze codebase architecture", "document this system's architecture", or "analyze this GitHub repository". Supports cloning a main repository from a URL and adding dependent repositories as git submodules before analysis. Provides deep file-level analysis, interactive dependency querying, and human-readable security/architecture insights.
 ---
 
 # Codebase Architecture Analyst
@@ -15,6 +15,9 @@ Trigger this skill when users ask to:
 - "Explain this project"  
 - "Analyze codebase architecture"
 - "Document this system's architecture"
+- "Analyze this GitHub repository"
+- "Clone and analyze this repository"
+- "Analyze the repository at [URL]"
 - "What files depend on [filename]?"
 - "Show me the dependency graph for [component]"
 - "Explain the security architecture"
@@ -934,8 +937,81 @@ Full list of every command executed, with version and exit code.
 
 ## Analysis Execution Steps
 
+### 0. Repository Setup (REQUIRED WHEN ANALYZING A REMOTE REPOSITORY)
+
+When the user asks to analyze a GitHub repository (or any remote Git repository), follow this interactive setup before proceeding to the output location and analysis steps.
+
+#### Step R1 — Ask for the Main Repository URL
+
+Ask the user:
+
+> "What is the URL of the main repository you would like to analyze? (e.g., `https://github.com/owner/repo`)"
+
+Wait for the user's response and store it as `{main-repo-url}`. Derive the repository name (the last path segment without `.git`) and store it as `{repo-name}`.
+
+#### Step R2 — Ask for the Clone Location
+
+Ask the user:
+
+> "Where would you like to clone the repository? Please provide an absolute path to the parent directory (e.g., `/Users/you/projects`). The repository will be cloned to `{path}/{repo-name}/`."
+
+Wait for the user's response. Store the full clone destination as `{project-path}` (i.e., `{clone-base-path}/{repo-name}`). This path becomes the root for all subsequent analysis steps.
+
+Clone the main repository:
+
+```sh
+git clone {main-repo-url} {project-path}
+```
+
+#### Step R3 — Ask About Dependent Repositories
+
+Ask the user:
+
+> "Does this repository depend on other repositories that should be included in the analysis? (yes / no)"
+
+If the user answers **no**, proceed directly to [Step 0: Confirm Output Location](#0-confirm-output-location-required-first-step).
+
+If the user answers **yes**, continue to Step R4.
+
+#### Step R4 — Collect and Clone Dependency Repositories
+
+For each dependency, ask:
+
+> "Please provide the URL of the dependency repository."
+
+For each URL provided:
+1. Add it as a git submodule inside the main repository:
+   ```sh
+   cd {project-path}
+   git submodule add {dependency-url}
+   ```
+2. Initialize and update all submodules recursively:
+   ```sh
+   git submodule update --init --recursive
+   ```
+3. Then ask:
+   > "Is there another dependency repository to add? (yes / no)"
+4. If yes, repeat this step with the next dependency URL.
+5. If no, proceed to Step R5.
+
+#### Step R5 — Confirm Dependencies and Proceed
+
+After all submodule additions are complete, run:
+```sh
+git submodule status
+```
+
+Report the full list of cloned submodules to the user with their paths and commit SHAs, then confirm:
+
+> "All repositories have been cloned. I'll now proceed with the full architectural analysis of `{repo-name}` and its dependencies."
+
+Proceed to [Step 0: Confirm Output Location](#0-confirm-output-location-required-first-step). Use `{project-path}` as the root for all analysis.
+
+---
+
 ### 0. Confirm Output Location (REQUIRED FIRST STEP)
-- **Ask the user for an output path** before doing anything else: "Where would you like to save the analysis results? Please provide an absolute path."
+- **If the repository was cloned in Step R2 above**, `{project-path}` is already known — use it as the root for analysis. Skip to asking for the output location.
+- **Ask the user for an output path** before doing anything else: "Where would you like to save the analysis results? Please provide an absolute path (e.g., `/Users/you/analysis-results` or `~/Documents/code-analysis`). The output will be saved under `{your-path}/{project-name}/{timestamp}/` and will not be written into the project being analyzed."
 - Wait for the user's response and store it as `{output-base-path}`
 - Do NOT proceed until an explicit path is provided
 - Do NOT default to saving inside the project being analyzed — the project directory must remain unmodified
@@ -944,8 +1020,8 @@ Full list of every command executed, with version and exit code.
 
 ### 1. Project Setup & File Discovery
 - Extract project name from the analyzed project path and create the timestamped analysis folder at `{output-base-path}/{project-name}/{timestamp}/`
-- Use search_subagent to discover ALL source files in the codebase
-- Create source file inventory with complete file tracking
+- Use search_subagent to discover ALL source files in the codebase, including files inside any git submodule directories (dependent repositories cloned in Step R4 above)
+- Create source file inventory with complete file tracking, noting which files belong to the main repository vs. which belong to each submodule dependency
 - Initialize analysis databases and query structures
 
 ### 2. Deep File-Level Analysis
