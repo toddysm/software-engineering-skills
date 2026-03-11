@@ -953,9 +953,9 @@ Wait for the user's response and store it as `{main-repo-url}`. Derive the repos
 
 Ask the user:
 
-> "Where would you like to clone the repository? Please provide an absolute path to the parent directory (e.g., `/Users/you/projects`). The repository will be cloned to `{path}/{repo-name}/`."
+> "Where would you like to clone the repository? Please provide an absolute path to the parent directory (e.g., `/Users/you/projects`). The repository will be cloned to `{clone-base-path}/{repo-name}/`."
 
-Wait for the user's response. Store the full clone destination as `{project-path}` (i.e., `{clone-base-path}/{repo-name}`). This path becomes the root for all subsequent analysis steps.
+Wait for the user's response. Store this parent directory path as `{clone-base-path}`, and the full clone destination as `{project-path}` (i.e., `{clone-base-path}/{repo-name}`). This path becomes the root for all subsequent analysis steps.
 
 Clone the main repository:
 
