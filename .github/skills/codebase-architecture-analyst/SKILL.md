@@ -975,15 +975,19 @@ If the user answers **yes**, continue to Step R4.
 
 #### Step R4 — Collect and Clone Dependency Repositories
 
-For each dependency, ask:
+For each dependency, ask for both the URL **and** the desired local path in a single prompt:
 
-> "Please provide the URL of the dependency repository."
+> "Please provide the URL of the dependency repository and the local path where it should be placed inside the main repository (e.g., `deps/my-library`). Providing an explicit path keeps dependencies organized and avoids collisions with existing directories."
 
-For each URL provided:
-1. Add it as a git submodule inside the main repository:
+Derive a suggested default path from the repository name (last URL segment without `.git`) using the convention `deps/{repo-name}` and offer it to the user:
+
+> "Suggested path: `deps/{dep-repo-name}`. Press Enter to accept or type a different path."
+
+For each URL + path pair provided:
+1. Add it as a git submodule at the specified path inside the main repository:
    ```sh
    cd {project-path}
-   git submodule add {dependency-url}
+   git submodule add {dependency-url} {submodule-path}
    ```
 2. Initialize and update all submodules recursively:
    ```sh
@@ -991,7 +995,7 @@ For each URL provided:
    ```
 3. Then ask:
    > "Is there another dependency repository to add? (yes / no)"
-4. If yes, repeat this step with the next dependency URL.
+4. If yes, repeat this step with the next dependency URL and path.
 5. If no, proceed to Step R5.
 
 #### Step R5 — Confirm Dependencies and Proceed
