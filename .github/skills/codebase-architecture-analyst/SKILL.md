@@ -501,7 +501,7 @@ For each detected language, run the tools listed below and save output to `{outp
 
 When executing the security analysis, follow this decision tree for each tool:
 
-1. **Check if the tool is available**: run `which {tool}` or `{tool} --version`
+1. **Check if the tool is available**: run `which {tool}` for system-wide/non-Python tools, or `.venv/bin/{tool} --version` for Python tools installed in the workspace virtual environment
 2. **If available**: execute it immediately with JSON output
 3. **If not available — try Docker**: check if Docker is running (`docker info`). If yes, use the container variant:
    - `semgrep`: `docker run --rm -v "$(pwd):/src" semgrep/semgrep semgrep --config=p/python --json /src`
@@ -513,7 +513,7 @@ When executing the security analysis, follow this decision tree for each tool:
 
 #### Tool Execution Workflow
 
-> **Python virtual environment**: For all `pip install` commands and Python-based tool invocations in this workflow, use `.venv/bin/pip install` and `.venv/bin/<tool>` respectively. The `.venv/` must exist at the workspace root (see Step 0.5 in the Analysis Execution Steps above).
+> **Python virtual environment**: For all `pip install` commands and Python-based tool invocations in this workflow, use `.venv/bin/pip install` and `.venv/bin/<tool>` when the tool is installed in the workspace virtual environment. The `.venv/` must exist at the workspace root (see Step 0.5 in the Analysis Execution Steps section).
 
 1. **Detect all languages and IaC types** from file extensions and manifest files
 2. **Select applicable tools** from the per-language tables above, plus always run the Universal tools
