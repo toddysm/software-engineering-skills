@@ -943,7 +943,7 @@ These rules apply whenever this skill (or any agent using it) commits or pushes 
 
 **Branch safety:**
 - **Never push directly to `main`** (or any other protected branch such as `master`, `release/*`, `production`). All changes must go through a feature branch.
-- If a commit accidentally lands on `main` locally, cherry-pick it to the correct feature branch, then reset `main` to `origin/main` before pushing anywhere.
+- If a commit accidentally lands on `main` locally, cherry-pick it to the correct feature branch, then run `git fetch origin` and reset `main` to the updated `origin/main` before pushing anywhere.
 
 **Branch selection:**
 - Before running any `git push`, confirm which branch is active with `git branch` or `git status`.
