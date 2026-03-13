@@ -937,6 +937,31 @@ Full list of every command executed, with version and exit code.
 - **Human-Readable Templates**: See [references/readable_analysis_templates.md](references/readable_analysis_templates.md)
 - **Visual Generation Patterns**: See [references/enhanced_diagrams.md](references/enhanced_diagrams.md)
 
+## Git Workflow Rules
+
+These rules apply whenever this skill (or any agent using it) commits or pushes changes to a repository — including changes to the skill itself, generated output files, or any other workspace modifications.
+
+**Branch safety:**
+- **Never push directly to `main`** (or any other protected branch such as `master`, `release/*`, `production`). All changes must go through a feature branch.
+- If a commit accidentally lands on `main` locally, cherry-pick it to the correct feature branch, then reset `main` to `origin/main` before pushing anywhere.
+
+**Branch selection:**
+- Before running any `git push`, confirm which branch is active with `git branch` or `git status`.
+- **If the target branch to push to is not explicitly known or was not specified by the user, always ask before pushing.** Do not infer or assume the correct branch.
+
+**Suggested push workflow:**
+```sh
+# 1. Verify you are on the correct branch
+git status
+
+# 2. Stage and commit
+git add <files>
+git commit -m "<message>"
+
+# 3. Push only the current feature branch — never main
+git push origin <feature-branch-name>
+```
+
 ## Analysis Execution Steps
 
 ### 0. Repository Setup (REQUIRED WHEN ANALYZING A REMOTE REPOSITORY)
