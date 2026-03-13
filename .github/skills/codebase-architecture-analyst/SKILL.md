@@ -1061,10 +1061,10 @@ python3 -m venv .venv
 .venv/bin/pip install --upgrade pip
 ```
 
-**Where `.venv/` lives**: at the root of the `software-engineering-skills` workspace — the same directory that contains the `.github/` folder where this skill resides.
+**Where `.venv/` lives**: at the root of the `software-engineering-skills` workspace — the same directory that contains the `.github/` folder where this skill resides. All commands below assume your current working directory is this workspace root.
 
 **Mandatory rules for all subsequent steps:**
-- Run all analysis scripts as: `.venv/bin/python3 scripts/<script>.py` — never bare `python3`
+- Run all analysis scripts as: `.venv/bin/python3 .github/skills/codebase-architecture-analyst/scripts/<script>.py` — never bare `python3`
 - Install all Python security scanning tools as: `.venv/bin/pip install <tool>` — never bare `pip install`
 - Check Python tool availability as: `.venv/bin/<tool> --version` (not `which <tool>`, which may find a different system version)
 
@@ -1075,7 +1075,7 @@ python3 -m venv .venv
 - Initialize analysis databases and query structures
 
 ### 2. Deep File-Level Analysis
-- Run `.venv/bin/python3 scripts/analyze_source_files.py` on every discovered source file
+- Run `.venv/bin/python3 .github/skills/codebase-architecture-analyst/scripts/analyze_source_files.py` on every discovered source file
 - Extract documentation, comments, and code structure from each file
 - Catalog functions, classes, exports, and interfaces per file
 - Build comprehensive file-to-purpose mapping
