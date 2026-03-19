@@ -425,20 +425,20 @@ class DeepDependencyAnalyzer:
                     cycle_start = path.index(file_path)
                     cycle = path[cycle_start:] + [file_path]
                     self.circular_dependencies.append(cycle)
-                return True
+                # Always return here; the caller will unwind its own rec_stack entry
+                return
             
             if file_path in visited:
-                return False
+                return
             
             visited.add(file_path)
             rec_stack.add(file_path)
             
-            for dependency in self.dependency_graph[file_path]['imports_from']:
-                if dfs(dependency, path + [file_path]):
-                    return True
-            
-            rec_stack.remove(file_path)
-            return False
+            try:
+                for dependency in self.dependency_graph[file_path]['imports_from']:
+                    dfs(dependency, path + [file_path])
+            finally:
+                rec_stack.remove(file_path)
         
         for file_path in self.dependency_graph.keys():
             if file_path not in visited:
