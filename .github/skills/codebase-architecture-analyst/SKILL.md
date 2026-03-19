@@ -72,6 +72,12 @@ Trigger this skill when users ask to:
 2. **Build bi-directional dependency graph** with queryable structure
 3. **Create impact analysis mappings** ("what affects what")
 4. **Generate dependency query database** for interactive exploration
+5. **Generate interactive dependency graph** using `scripts/generate_dependency_graph.py`:
+   - Reads `dependency-graph.json` and `circular-dependencies.json` from the analysis output
+   - Produces a self-contained `dependency-graph.html` in `dependencies/`
+   - WebGL rendering (Sigma.js + Graphology) handles 10K+ nodes smoothly
+   - Features: search, category filters, node inspector, ForceAtlas2 layout, circular dependency highlighting, minimap
+   - **Always run this script** after dependency analysis completes
 
 ### Phase 3: Human-Readable Analysis & Documentation
 1. **Generate human-readable overviews** using analysis data:
@@ -142,9 +148,10 @@ Trigger this skill when users ask to:
 ### Enhanced Analysis Scripts
 1. **File Analysis**: `scripts/analyze_source_files.py` - Deep file-level understanding
 2. **Dependency Analysis**: `scripts/deep_dependency_analyzer.py` - Granular relationship mapping  
-3. **Query Engine**: `scripts/dependency_query_engine.py` - Interactive dependency exploration
-4. **Human Reports**: `scripts/generate_readable_reports.py` - Plain English insights
-5. **Visual Generation**: `scripts/enhanced_diagram_generator.py` - Detailed architecture diagrams
+3. **Dependency Graph**: `scripts/generate_dependency_graph.py` - Interactive HTML dependency graph visualization
+4. **Query Engine**: `scripts/dependency_query_engine.py` - Interactive dependency exploration
+5. **Human Reports**: `scripts/generate_readable_reports.py` - Plain English insights
+6. **Visual Generation**: `scripts/enhanced_diagram_generator.py` - Detailed architecture diagrams
 
 ### Output Location
 
@@ -165,6 +172,7 @@ Store the confirmed path as `{output-base-path}` and use it as the root for all 
 │   └── documentation-map.json      # Documentation extracted from files
 ├── dependencies/
 │   ├── dependency-graph.json        # Complete bi-directional dependency map
+│   ├── dependency-graph.html        # Interactive graph visualization (open in browser)
 │   ├── function-dependencies.json   # Function-level usage patterns
 │   ├── impact-analysis.json        # "What affects what" mappings
 │   └── circular-dependencies.json   # Dependency cycle detection
