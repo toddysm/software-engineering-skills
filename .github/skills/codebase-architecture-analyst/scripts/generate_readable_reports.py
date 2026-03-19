@@ -15,6 +15,21 @@ import re
 class HumanReadableReportsGenerator:
     """Generates human-readable analysis reports in plain English"""
     
+    @staticmethod
+    def _normalize_purpose(raw_purpose) -> Dict[str, Any]:
+        """Normalize purpose field to a dict with at least a 'primary_role' key.
+        
+        The source file analyzer may store purpose as either a dict
+        (e.g. {'primary_role': 'api', 'indicators': [...]}) or a plain
+        string (e.g. 'Configuration file').  This helper guarantees a
+        consistent dict so callers can safely use .get().
+        """
+        if isinstance(raw_purpose, dict):
+            return raw_purpose
+        if isinstance(raw_purpose, str) and raw_purpose:
+            return {'primary_role': raw_purpose, 'indicators': []}
+        return {'primary_role': 'unknown', 'indicators': []}
+    
     def __init__(self):
         self.file_inventory = {}
         self.dependency_graph = {}
@@ -210,14 +225,12 @@ class HumanReadableReportsGenerator:
                 
                 # Get file purpose
                 file_info = self.file_inventory.get(component['file'], {})
-                purpose = file_info.get('purpose', {})
-                if isinstance(purpose, dict) and purpose.get('primary_role') and purpose.get('primary_role') != 'unknown':
+                purpose = self._normalize_purpose(file_info.get('purpose', {}))
+                if purpose.get('primary_role') and purpose.get('primary_role') != 'unknown':
                     report += f"**Purpose**: {purpose['primary_role'].replace('_', ' ').title()}"
                     if purpose.get('indicators'):
                         report += f" - {purpose['indicators'][0]}"
                     report += "\\n\\n"
-                elif isinstance(purpose, str) and purpose:
-                    report += f"**Purpose**: {purpose}\\n\\n"
                 
                 # Show key dependents
                 if component['key_dependents']:
@@ -356,7 +369,7 @@ class HumanReadableReportsGenerator:
         unvalidated_files = []
         
         for file_path, file_info in self.file_inventory.items():
-            purpose = file_info.get('purpose', {})
+            purpose = self._normalize_purpose(file_info.get('purpose', {}))
             
             # Check API/controller files
             if purpose.get('primary_role') in ['api', 'controller']:
@@ -845,7 +858,7 @@ class HumanReadableReportsGenerator:
         categories = defaultdict(list)
         
         for file_path, file_info in self.file_inventory.items():
-            purpose = file_info.get('purpose', {})
+            purpose = self._normalize_purpose(file_info.get('purpose', {}))
             primary_role = purpose.get('primary_role', 'utility')
             
             categories[primary_role].append(file_path)
