@@ -421,9 +421,10 @@ class DeepDependencyAnalyzer:
         def dfs(file_path, path):
             if file_path in rec_stack:
                 # Found a cycle
-                cycle_start = path.index(file_path)
-                cycle = path[cycle_start:] + [file_path]
-                self.circular_dependencies.append(cycle)
+                if file_path in path:
+                    cycle_start = path.index(file_path)
+                    cycle = path[cycle_start:] + [file_path]
+                    self.circular_dependencies.append(cycle)
                 return True
             
             if file_path in visited:

@@ -211,11 +211,13 @@ class HumanReadableReportsGenerator:
                 # Get file purpose
                 file_info = self.file_inventory.get(component['file'], {})
                 purpose = file_info.get('purpose', {})
-                if purpose.get('primary_role') != 'unknown':
+                if isinstance(purpose, dict) and purpose.get('primary_role') and purpose.get('primary_role') != 'unknown':
                     report += f"**Purpose**: {purpose['primary_role'].replace('_', ' ').title()}"
                     if purpose.get('indicators'):
                         report += f" - {purpose['indicators'][0]}"
                     report += "\\n\\n"
+                elif isinstance(purpose, str) and purpose:
+                    report += f"**Purpose**: {purpose}\\n\\n"
                 
                 # Show key dependents
                 if component['key_dependents']:
